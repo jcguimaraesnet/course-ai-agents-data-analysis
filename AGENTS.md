@@ -58,6 +58,8 @@ pnpm build                      # build dos dois decks em dist/<nome>/
 - **Diagramas:** Mermaid com `look: handDrawn` e tema escuro ([setup/mermaid.ts](setup/mermaid.ts)).
 - **Código:** Monaco em Python, somente leitura ([setup/monaco.ts](setup/monaco.ts)).
 - **Addons:** os decks ativam só o `window-mockup` (`addons:` no headmatter). O `slidev-addon-python-runner` está instalado, mas só funciona se for incluído em `addons:` do deck.
+- **Comark:** `::code-group` (abas de código) e outros blocos `::componente` exigem `comark: true` no headmatter. Hoje só o deck `statistics-eda` ativa a opção.
+- **Preparação do ambiente (WSL, Antigravity, Python e uv):** os alunos usam Windows com WSL. Esses slides ficam no início da etapa 1 de `statistics-eda`, a primeira disciplina do bloco, e vieram do deck de Agentes de IA (`course-intelligent-agents`).
 
 ### Layouts e componentes próprios
 
