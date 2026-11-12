@@ -1,0 +1,56 @@
+/* Estilos globais do deck (carregados automaticamente pelo Slidev). */
+
+/* Oculta o botão "Presenter Mode" da barra de navegação do Slidev.
+ *
+ * Por que CSS: não há jeito oficial de esconder ESTE botão mantendo a rota
+ * /presenter/ acessível. As configs são tudo-ou-nada (`presenter: false` / `dev`
+ * removem também a rota, dando 404) e `remote` — que faria exatamente isso —
+ * só é injetado pelo dev server, não pelo `slidev build`.
+ *
+ * Ancoramos na CLASSE DO ÍCONE, não no `title`, porque títulos são strings de
+ * UI e podem mudar ou ser traduzidos.
+ *
+ * ATENÇÃO — isto é cosmético, não é segurança:
+ *   - a rota /presenter/1 continua PÚBLICA: quem digitar a URL entra e vê as
+ *     notas de orador. Estamos escondendo o atalho, não trancando a porta.
+ *   - se o Slidev trocar esse ícone, a regra para de funcionar EM SILÊNCIO.
+ *     Reverificar ao atualizar o Slidev.
+ *
+ * Entrada do apresentador (dev ou produção): /presenter/1
+ *
+ * Nota: o botão "Show editor" NÃO precisa de regra — ele é `__DEV__`-only e o
+ * `slidev build` já não o renderiza no GitHub Pages.
+ */
+button.slidev-icon-btn:has(.i-carbon\:user-speaker) {
+  display: none;
+}
+
+/* Prefixo "#" padronizado nos títulos dos slides.
+   Evita ter que escrever "\#" manualmente em cada título. */
+.slidev-layout h1::before,
+.slidev-layout h2::before {
+  content: '#';
+  margin-right: 0.3em;
+  font-weight: 400;
+  opacity: 0.4;
+}
+
+/* Opt-out por slide: basta adicionar `class: no-hash` ao frontmatter do slide. */
+.slidev-layout.no-hash h1::before,
+.slidev-layout.no-hash h2::before {
+  content: none;
+  margin-right: 0;
+}
+
+/* Layouts em que o prefixo NÃO faz sentido (capa, seção, destaque, autor). */
+.slidev-layout.cover h1::before,
+.slidev-layout.cover h2::before,
+.slidev-layout.intro h1::before,
+.slidev-layout.section h1::before,
+.slidev-layout.statement h1::before,
+.slidev-layout.fact h1::before,
+.slidev-layout.custom-author h1::before,
+.slidev-layout.custom-author h2::before {
+  content: none;
+  margin-right: 0;
+}

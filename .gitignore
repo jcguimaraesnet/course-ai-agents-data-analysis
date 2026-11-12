@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.slidev/
+*.log
+
+# Playwright MCP — snapshots (.yml) e logs de console das sessões de captura
+.playwright-mcp/
+
+# segredos
+.env
+
+# WSL / NTFS — metadados de arquivos baixados pelo Windows
+*:Zone.Identifier
+
+# OS
+.DS_Store
