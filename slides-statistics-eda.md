@@ -22,6 +22,14 @@ footer: false
 presenter: true
 addons:
   - window-mockup
+  - slidev-addon-python-runner
+# python-runner: executa os blocos {monaco-run} no navegador (Pyodide, com pandas 2.x)
+python:
+  installs: []
+  loadPackagesFromImports: true
+  suppressDeprecationWarnings: true
+  alwaysReload: false
+  loadPyodideOptions: {}
 ---
 
 # Estatística Aplicada e Análise Exploratória de Dados

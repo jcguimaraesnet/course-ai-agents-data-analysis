@@ -57,9 +57,32 @@ pnpm build                      # build dos dois decks em dist/<nome>/
 - **Fundo com brilho** ([global-bottom.vue](global-bottom.vue)): `glow`, `glowOpacity`, `glowHue` e `glowSeed` no frontmatter.
 - **Diagramas:** Mermaid com `look: handDrawn` e tema escuro ([setup/mermaid.ts](setup/mermaid.ts)).
 - **Código:** Monaco em Python, somente leitura ([setup/monaco.ts](setup/monaco.ts)).
-- **Addons:** os decks ativam só o `window-mockup` (`addons:` no headmatter). O `slidev-addon-python-runner` está instalado, mas só funciona se for incluído em `addons:` do deck.
+- **Addons:** os dois decks ativam o `window-mockup`. O `statistics-eda` também ativa o `slidev-addon-python-runner` (com a configuração `python:` no headmatter), que executa os blocos `{monaco-run}` no navegador.
+- **Demos `{monaco-run}`:** rodam no Pyodide 0.26, que traz o **pandas 2.x**: texto aparece como `object`, não `str`. Use **um bloco executável por slide** (com dois, o addon joga a saída de um no painel do outro) e capture erros esperados com `try/except`, para não exibir o traceback longo do Pyodide.
 - **Comark:** `::code-group` (abas de código) e outros blocos `::componente` exigem `comark: true` no headmatter. Hoje só o deck `statistics-eda` ativa a opção.
 - **Preparação do ambiente (WSL, Antigravity, Python e uv):** os alunos usam Windows com WSL. Esses slides ficam no início da etapa 1 de `statistics-eda`, a primeira disciplina do bloco, e vieram do deck de Agentes de IA (`course-intelligent-agents`).
+
+### Estrutura de uma etapa
+
+Segue o padrão do deck de referência (`course-intelligent-agents`):
+
+1. **Abertura** — `layout: section` com `routeAlias: etapaN`.
+2. **Seções** — `layout: section` com o tema e uma linha em negrito com o que será visto.
+3. **Conceitos** — quase sempre `two-cols-header`: título `#`, subtítulo `#### **…**`, código de um lado e explicação do outro, `sourceLabel`/`source` apontando para a documentação, e notas do professor em `<!-- -->`.
+4. **Live Coding** — `layout: section` com o dataset e a análise; o código de referência completo e os resultados esperados ficam nas notas.
+5. **Live coding: codificação assistida por IA** — o prompt do agente numa `WindowMockup` (`prompt.md`), com as seções Papel, Tarefa, Contexto e Saída e Verificação.
+6. **Hands-on** — 3 ou 4 exercícios `🛠️ **Exercício \#N:**` (uma linha cada), um checklist `- [ ]` e, nas notas, o detalhe de cada exercício e o que ele prepara no TP.
+
+Antes de publicar, confira os slides novos no navegador (skill `screenshot-slide`): o rodapé ocupa os ~5% inferiores do slide, e texto, tabela ou diagrama não pode invadir essa faixa.
+
+### Base de dados das aulas (Estatística e EDA)
+
+O fio condutor do live coding é uma base fictícia de **viagens de bicicletas compartilhadas**, gerada pelo `gerar_dados.py` (seed 42), cujo código completo está nas notas do Live Coding da etapa 1; a etapa 2 acrescenta o trecho de abril.
+
+- **Arquivos:** `viagens.csv` (jan–mar/2026), `viagens_abril.csv` (etapa 2), `estacoes.xlsx` (12 estações) e `clima.json` (um registro por dia, jan–abr).
+- **Defeitos de export:** `duracao_min` como texto com vírgula, ~5% de `duracao_min` e ~15% de `avaliacao` ausentes, ~2% de linhas reenviadas e o export de abril repetindo o 31/03.
+- **Relações plantadas para as próximas etapas:** a duração é a distância dividida por uma velocidade (assinantes ~14 km/h, avulsos ~12 km/h), boa para correlação e regressão; dias com chuva acima de 5 mm têm menos viagens (16,9 contra 29,6 por dia) e viagens mais longas; a avaliação cai em viagens longas e com chuva.
+- **Hands-on:** usa o Gapminder do livro *Pandas for Everyone* e uma base de outro domínio que cada aluno gera com o agente.
 
 ### Layouts e componentes próprios
 
