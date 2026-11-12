@@ -278,7 +278,7 @@ cd my-first-eda
 
 uv python install 3.14
 uv init --python 3.14
-uv add pandas matplotlib seaborn scipy ipykernel
+uv add pandas matplotlib seaborn scipy openpyxl ipykernel
 
 # abra um notebook .ipynb e selecione o kernel da .venv
 ```
@@ -290,7 +290,7 @@ cd my-first-eda
 python -m venv .venv
 source .venv/bin/activate
 
-pip install pandas matplotlib seaborn scipy ipykernel
+pip install pandas matplotlib seaborn scipy openpyxl ipykernel
 pip freeze > requirements.txt
 
 # abra um notebook .ipynb e selecione o kernel da .venv
@@ -300,7 +300,7 @@ pip freeze > requirements.txt
 ::right::
 
 > [!NOTE]
-> O pacote **`ipykernel`** permite **executar notebooks Jupyter** (`.ipynb`) no editor usando o ambiente virtual (`.venv`) do projeto.
+> O pacote **`ipykernel`** permite **executar notebooks Jupyter** (`.ipynb`) no editor usando o ambiente virtual (`.venv`) do projeto. O **`openpyxl`** permite ao pandas **ler e gravar planilhas Excel** (`.xlsx`).
 
 
 <!-- 
