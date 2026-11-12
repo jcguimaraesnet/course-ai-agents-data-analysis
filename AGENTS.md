@@ -83,6 +83,8 @@ O fio condutor do live coding é uma base fictícia de **viagens de bicicletas c
 - **Defeitos de export:** `duracao_min` como texto com vírgula, ~5% de `duracao_min` e ~15% de `avaliacao` ausentes, ~2% de linhas reenviadas e o export de abril repetindo o 31/03.
 - **Relações plantadas para as próximas etapas:** a duração é a distância dividida por uma velocidade (assinantes ~14 km/h, avulsos ~12 km/h), boa para correlação e regressão; dias com chuva acima de 5 mm têm menos viagens (16,9 contra 29,6 por dia) e viagens mais longas; a avaliação cai em viagens longas e com chuva.
 - **Hands-on:** usa o Gapminder do livro *Pandas for Everyone* e uma base de outro domínio que cada aluno gera com o agente.
+- **Etapas 3 em diante:** a base limpa vem de `carregar_base()`, do módulo `preparar_base.py` (código nas notas do Live Coding da etapa 3). Ele repete o pipeline da etapa 2 sem preencher `duracao_min`, porque a mediana preenchida criaria um pico artificial nas distribuições e distorceria as correlações.
+- **Gráficos estáticos (`public/eda-*.png`):** gerados dessa base com matplotlib e seaborn, no tema escuro dos slides. A superfície é `#1e1f29`; as séries usam azul `#3987e5`, laranja `#d95926` e aqua `#199e70` (paleta validada para daltonismo contra essa superfície), e o heatmap usa a divergente azul `#2a78d6`, cinza `#383835` e vermelho `#e66767`. Textos em tons de tinta (`#f0efec`, `#c3c2b7`, `#898781`) e vírgula decimal. Mantenha esse padrão ao refazer ou criar gráficos.
 
 ### Layouts e componentes próprios
 
