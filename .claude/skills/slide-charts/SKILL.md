@@ -41,11 +41,11 @@ Sem `--saida`, os PNGs vão para `public/`. A primeira linha da saída resume a 
    ```
 
 4. **Formate em pt-BR** com `virgula()` e `pct()`: vírgula decimal e sinal de menos tipográfico (−) em todo rótulo.
-5. **Dimensione pelo lugar no slide**: `figsize=(6, 4)` numa coluna de `two-cols-header`; de `(10, 3.2)` a `(12, 3.1)` na largura inteira de um slide `default`.
+5. **Dimensione pelo lugar no slide**: `figsize=(6, 4)` numa coluna de `two-cols-header`; de `(10, 3.2)` a `(12, 2.9)` na largura inteira de um slide `default`. Confira a proporção do PNG final (o `bbox_inches="tight"` corta as bordas): abaixo de 3:1, uma linha de texto sob o gráfico invade o rodapé.
 6. **Gere a prévia** com `--saida tmp/graficos` e abra o PNG (Read) para conferir rótulos sobrepostos, cortes e a vírgula decimal. Só então gere em `public/`.
 7. **No slide**, use `<AssetImg src="eda-<assunto>.png" class="rounded-lg w-full" />` e confira o resultado com a skill `screenshot-slide`.
 
-Dados sintéticos, como os de `eda-padroes-scatter.png`, são gerados dentro da própria função, com seed fixa.
+Dados sintéticos, como os de `eda-padroes-scatter.png`, são gerados dentro da própria função, com seed fixa. Quando o gráfico mostra a simulação de uma demo `{monaco-run}` (como `eda-permutacao-avaliacao.png` e `eda-bootstrap-avaliacao.png`), use a mesma semente, a mesma ordem dos dados e o mesmo número de repetições da demo, para que o gráfico e a saída da demo mostrem os mesmos números.
 
 ## Versões fixadas
 
