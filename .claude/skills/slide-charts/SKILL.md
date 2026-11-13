@@ -49,4 +49,4 @@ Dados sintéticos, como os de `eda-padroes-scatter.png`, são gerados dentro da 
 
 ## Versões fixadas
 
-pandas 3.1.1, numpy 2.5.4, matplotlib 3.11.2, seaborn 0.13.2, scipy 1.18.1 e openpyxl 3.1.5, no cabeçalho do `gerar.py`. Com elas, a base (seed 42) e os pixels se repetem a cada geração: um gráfico que não mudou sai idêntico byte a byte. Para atualizar, troque as versões, gere a prévia e confira o que mudou antes de sobrescrever o `public/`.
+pandas 3.1.1, numpy 2.5.4, matplotlib 3.11.2, seaborn 0.13.2, scipy 1.18.1, openpyxl 3.1.5 e scikit-learn 1.9.1 (regressão, etapas 7 e 8), no cabeçalho do `gerar.py`. Com elas, a base (seed 42) e os pixels se repetem a cada geração: um gráfico que não mudou sai idêntico byte a byte. Para atualizar, troque as versões, gere a prévia e confira o que mudou antes de sobrescrever o `public/`.

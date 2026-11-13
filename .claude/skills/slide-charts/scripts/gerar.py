@@ -7,6 +7,7 @@
 #     "seaborn==0.13.2",
 #     "scipy==1.18.1",
 #     "openpyxl==3.1.5",
+#     "scikit-learn==1.9.1",
 # ]
 # ///
 """Gera os gráficos estáticos dos slides (public/eda-*.png) com a base das aulas.
