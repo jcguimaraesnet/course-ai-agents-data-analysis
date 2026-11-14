@@ -285,41 +285,51 @@ ref.score(X_te, y_te)    # 0.732
 ---
 layout: two-cols-header
 layoutClass: gap-8
-sourceLabel: DecisionTreeClassifier
-source: https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html
+sourceLabel: PolynomialFeatures
+source: https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.PolynomialFeatures.html
 ---
 
 # Underfitting e overfitting
 
-#### **A profundidade da árvore controla quanto o modelo se ajusta ao treino**
+#### **Com termos polinomiais, o C controla quanto o modelo se ajusta ao treino**
 
 ::left::
 
 ```python [etapa1.ipynb]
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import (
+    PolynomialFeatures, StandardScaler)
 
-for d in [1, 6, None]:
-    arv = DecisionTreeClassifier(max_depth=d,
-        random_state=42).fit(X_tr, y_tr)
-    print(d, arv.score(X_tr, y_tr), arv.score(X_te, y_te))
-# 1 0.740 0.748 | 6 0.810 0.782 | None 0.969 0.718
+def modelo(C):
+    return make_pipeline(StandardScaler(),
+        PolynomialFeatures(8), StandardScaler(),
+        LogisticRegression(C=C, max_iter=5000))
+
+for C in [0.0001, 1, 10000]:
+    m = modelo(C).fit(X_tr, y_tr)
+    print(C, m.score(X_tr, y_tr), m.score(X_te, y_te))
+# 0.0001 0.718 0.738 | 1 0.793 0.793 | 10000 0.815 0.760
 ```
-
-<div class="text-left w-full [&_li]:mb-2">
-
-- **Underfitting** — erra no treino e no teste: simples demais.
-- **Overfitting** — acerta o treino e erra o teste: decorou o ruído.
-
-</div>
 
 ::right::
 
-<AssetImg src="pm-complexidade-arvore.png" class="rounded-lg w-full" />
+<AssetImg src="pm-complexidade-c.png" class="rounded-lg w-full" />
+
+<div class="text-left w-full [&_li]:mb-1 mt-1">
+
+- **Underfitting** — `C` pequeno: bias alto.
+- **Overfitting** — `C` grande: variância alta.
+
+</div>
 
 <!--
-- a árvore de decisão entra aqui só como ferramenta: uma sequência de perguntas sim/não sobre as features; quanto mais profunda, mais perguntas e mais detalhe.
-- sem limite de profundidade, ela acerta 96,9% do treino e 71,8% do teste: pior que a referência (73,2%).
-- o melhor teste fica entre 3 e 6 níveis; escolher pelo teste, porém, é trapaça: a etapa 2 escolhe pela validação cruzada.
+- underfitting: com C pequeno, a regularização é demais, e treino e teste ficam na altura da referência. Overfitting: com C grande, o treino sobe e o teste cai.
+- PolynomialFeatures(8) transforma as 3 colunas em 165: todas as potências e produtos até o grau 8, como os polinômios da demo de bias e variância. Com tantos termos, a fronteira pode ficar muito recortada.
+- o primeiro StandardScaler iguala a escala das 3 features antes das potências; o segundo, a das 165 colunas antes da regularização, que pune os coeficientes por igual.
+- a regressão logística entra como classificador pronto (etapa 3); aqui só importa o C, o inverso da força da regularização. O próximo slide explica o C.
+- C = 0,0001: 0,718 no treino e 0,738 no teste, praticamente a referência (0,711 e 0,732). Com C entre 0,1 e 1, os dois ficam em 0,79. Com C = 10.000, 0,815 no treino e 0,760 no teste.
+- escolher o C pelo teste, porém, é trapaça: a etapa 2 escolhe pela validação cruzada.
 -->
 
 ---
@@ -407,7 +417,7 @@ for grau in [1, 3, 9]:
 <!--
 - saída esperada: grau 1 bias² 0,296 e variância 0,026; grau 3 bias² 0,004 e variância 0,016; grau 9 bias² 0,002 e variância 0,744.
 - a reta (grau 1) erra sempre do mesmo jeito: bias alto. O grau 9 acerta na média, mas cada amostra dá uma curva diferente: variância alta.
-- o grau 3 é o equilíbrio: o mesmo papel da árvore de 6 níveis no gráfico do slide de underfitting.
+- o grau 3 é o equilíbrio: o mesmo papel do C entre 0,1 e 1 no gráfico do slide de underfitting. Lá, o botão é a regularização; aqui, o grau do polinômio.
 -->
 
 ---
@@ -424,35 +434,32 @@ source: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.L
 ::left::
 
 ```python [etapa1.ipynb]
-from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
+import numpy as np
 
-for C in [0.001, 1]:
-    m = make_pipeline(StandardScaler(),
-                      LogisticRegression(C=C))
-    m.fit(X_tr, y_tr)
-    print(C, m.score(X_tr, y_tr),
-          m.score(X_te, y_te))
-# 0.001  0.725  0.742
-# 1      0.785  0.805
+for C in [0.0001, 1, 10000]:
+    m = modelo(C).fit(X_tr, y_tr)
+    print(C, np.abs(m[-1].coef_).max())
+# 0.0001   0.05
+# 1        1.29
+# 10000   56.22
 ```
 
 ::right::
 
 <div class="text-left w-full [&_li]:mb-4">
 
-- **Hiperparâmetro** — o botão que você escolhe antes do `fit`: `max_depth` na árvore, `C` na regressão logística.
-- **Parâmetro** — o que o modelo aprende no `fit`: os coeficientes, as perguntas da árvore.
-- **`C`** — o inverso da força da regularização: `C` pequeno regulariza muito.
-- **Diagnóstico** — com `C = 0.001`, treino e teste ficam perto da referência: bias alto.
+- **Hiperparâmetro** — o botão que você escolhe antes do `fit`: o grau do polinômio, o `C`.
+- **Parâmetro** — o que o modelo aprende no `fit`: os 165 coeficientes.
+- **`C`** — o inverso da força da regularização: `C` pequeno segura os coeficientes perto de zero.
+- **Regularizar** — punir coeficientes grandes, que recortam a fronteira e deixam o modelo sensível à amostra.
 
 </div>
 
 <!--
-- a regressão logística entra aqui como um classificador pronto; como ela transforma as features numa probabilidade é assunto da etapa 3.
-- o make_pipeline com StandardScaler é o mesmo da DR1 (etapa 8): a regularização pune coeficientes grandes, e por isso as features precisam estar na mesma escala.
-- na árvore, regularizar é limitar max_depth (ou exigir mais exemplos por folha).
+- m[-1] é o último passo do pipeline, a regressão logística; coef_ tem um coeficiente por coluna (165).
+- com C = 10.000, o maior coeficiente chega a 56: é aí que o modelo decora o ruído do treino (0,815 contra 0,760 no teste).
+- a regularização pune coeficientes grandes, e por isso as colunas precisam estar na mesma escala: daí o StandardScaler depois do PolynomialFeatures (o make_pipeline com StandardScaler é o mesmo da DR1, etapa 8).
+- reduzir o grau do polinômio também simplifica o modelo: menos termos, fronteira mais suave. No hands-on, a turma compara os dois botões.
 - escolher o hiperparâmetro olhando o teste contamina a avaliação: a etapa 2 resolve com validação cruzada e GridSearchCV.
 -->
 
@@ -464,7 +471,7 @@ layout: section
 
 🚲 &nbsp;**Dataset:** `usuarios_avulsos.csv`, o primeiro mês dos usuários avulsos da empresa de bicicletas, gerado pelo `gerar_dados.py`
 
-🎯 &nbsp;**Análise:** quem vira assinante? A referência, a árvore com profundidades diferentes e a regressão logística com `C` diferentes, com o diagnóstico de bias e variância
+🎯 &nbsp;**Análise:** quem vira assinante? A referência e a regressão logística com termos polinomiais e `C` de 0,0001 a 10.000, com o diagnóstico de bias e variância
 
 <!--
 Projeto: o mesmo projeto uv da DR1 (WSL + uv). Dependências: uv add pandas numpy scikit-learn matplotlib ipykernel
@@ -512,13 +519,13 @@ ARQUIVO 2 — etapa1.ipynb (uma célula de markdown antes de cada célula de có
 ```python
 # 1. Carga e o problema: alvo, proporção e features numéricas sem ausentes
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from sklearn.dummy import DummyClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 
 df = pd.read_csv("usuarios_avulsos.csv")
 df.shape, df["virou_assinante"].mean(), df.isna().sum()
@@ -530,29 +537,30 @@ X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=42)
 ref = DummyClassifier().fit(X_tr, y_tr)
 ref.score(X_tr, y_tr), ref.score(X_te, y_te)
 
-# 3. Árvore com profundidade de 1 a 20: acurácia de treino e de teste
+# 3. Regressão logística com termos polinomiais de grau 8 e C de 0,0001 a 10.000
+def modelo(C):
+    return make_pipeline(StandardScaler(), PolynomialFeatures(8), StandardScaler(),
+                         LogisticRegression(C=C, max_iter=5000))
+
 linhas = []
-for d in range(1, 21):
-    arv = DecisionTreeClassifier(max_depth=d, random_state=42).fit(X_tr, y_tr)
-    linhas.append({"max_depth": d, "treino": arv.score(X_tr, y_tr), "teste": arv.score(X_te, y_te)})
-curva = pd.DataFrame(linhas).set_index("max_depth")
-ax = curva.plot(marker="o")
+for C in [0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000]:
+    m = modelo(C).fit(X_tr, y_tr)
+    linhas.append({"C": C, "treino": m.score(X_tr, y_tr), "teste": m.score(X_te, y_te),
+                   "maior_coef": np.abs(m[-1].coef_).max()})
+curva = pd.DataFrame(linhas).set_index("C")
+ax = curva[["treino", "teste"]].plot(marker="o", logx=True)
 ax.axhline(ref.score(X_te, y_te), linestyle="--", color="gray")
 plt.show()
+curva
 
-# 4. Regressão logística com C muito pequeno e com o C padrão
-for C in [0.001, 1]:
-    m = make_pipeline(StandardScaler(), LogisticRegression(C=C)).fit(X_tr, y_tr)
-    print(C, m.score(X_tr, y_tr), m.score(X_te, y_te))
-
-# 5. Diagnóstico (markdown): para cada modelo, bias alto, variância alta ou equilíbrio, e o que fazer
+# 4. Diagnóstico (markdown): para cada faixa de C, bias alto, variância alta ou equilíbrio, e o que fazer
 ```
 
 >>> Resultados esperados: (3000, 9); 28,5% viraram assinantes; 230 avaliações médias ausentes (fora do X desta etapa).
 >>> Treino 2.400 e teste 600 linhas; positivos 28,9% no treino e 26,8% no teste (sem estratificar).
 >>> Referência: 0,711 no treino e 0,732 no teste.
->>> Árvore: profundidade 1 → 0,740 e 0,748 (underfitting); 6 → 0,810 e 0,782; sem limite (None) → 0,969 e 0,718; com 20 níveis, 0,967 e 0,725.
->>> Regressão logística: C = 0,001 → 0,725 e 0,742 (bias alto, perto da referência); C = 1 → 0,785 e 0,805.
+>>> Regressão logística com termos polinomiais (165 colunas), treino e teste: C = 0,0001 → 0,718 e 0,738 (underfitting, perto da referência); 0,001 → 0,762 e 0,765; 0,01 → 0,785 e 0,790; 0,1 → 0,791 e 0,792; 1 → 0,793 e 0,793; 10 → 0,802 e 0,783; 100 → 0,808 e 0,775; 1.000 → 0,811 e 0,768; 10.000 → 0,815 e 0,760 (overfitting).
+>>> Maior coeficiente em módulo: 0,05 com C = 0,0001; 1,29 com C = 1; 56,22 com C = 10.000.
 -->
 
 ---
@@ -581,25 +589,26 @@ usuário avulso vira assinante e diagnostique bias e variância.
    virou_assinante, e as features são idade, viagens_30d e distancia_media_km.
 2. Separe treino e teste (test_size=0.2, random_state=42).
 3. Calcule a acurácia de um DummyClassifier no treino e no teste.
-4. Treine DecisionTreeClassifier com max_depth de 1 a 20 (random_state=42)
-   e plote a acurácia de treino e de teste, com a referência tracejada.
-5. Treine LogisticRegression com C=0.001 e C=1, com StandardScaler num
-   make_pipeline, e mostre as acurácias de treino e teste.
+4. Monte um make_pipeline com StandardScaler, PolynomialFeatures(8),
+   StandardScaler e LogisticRegression(max_iter=5000).
+5. Treine-o com C de 0.0001 a 10000 (9 valores, em escala log), plote a
+   acurácia de treino e de teste com a referência tracejada e mostre o
+   maior coeficiente (em módulo) de cada C.
 6. Antes de cada passo, crie uma célula de markdown explicando o passo.
 
 # Saída e Verificação
 - Gere etapa1.ipynb e instale as dependências com uv add.
 - Execute o notebook do início ao fim, sem erros.
-- No fim, escreva o diagnóstico de cada modelo: bias, variância ou equilíbrio.
+- No fim, escreva o diagnóstico de cada faixa de C: bias, variância ou equilíbrio.
 ```
 </WindowMockup>
 
 <!--
 # 1 - human-in-the-loop: confira se o agente avaliou no teste e comparou com a referência; "acurácia de 72%" não diz nada sem ela.
 
-# 2 - se o diagnóstico chamar de "equilibrado" o modelo com treino e teste iguais perto de 0,73, é a deixa para o slide do tradeoff: ele não aprendeu nada (bias alto).
+# 2 - se o diagnóstico chamar de "equilibrado" o modelo com C = 0,0001 (treino e teste perto de 0,73), é a deixa para o slide do tradeoff: ele não aprendeu nada (bias alto).
 
-# 3 - se o agente escolher a profundidade pelo maior acerto no teste, segure: escolher hiperparâmetro olhando o teste é assunto da etapa 2.
+# 3 - se o agente escolher o C pelo maior acerto no teste, segure: escolher hiperparâmetro olhando o teste é assunto da etapa 2.
 -->
 
 ---
@@ -614,9 +623,9 @@ layout: default
 
 🛠️ &nbsp;**Exercício \#2:** No Titanic, calcule a proporção de sobreviventes e a acurácia da referência no teste.
 
-🛠️ &nbsp;**Exercício \#3:** Treine árvores com `max_depth` de 1 a 10 e sem limite e diagnostique bias e variância.
+🛠️ &nbsp;**Exercício \#3:** Com termos polinomiais de grau 6, varie o `C` da regressão logística e diagnostique bias e variância.
 
-🛠️ &nbsp;**Exercício \#4:** Compare a regressão logística com `C=0.001` e `C=1` e explique o efeito da regularização.
+🛠️ &nbsp;**Exercício \#4:** Fixe `C=10000`, compare os graus 1, 2, 4 e 6 e explique o efeito do grau.
 
 - [ ] justificar o tipo pelo que o problema oferece para aprender
 - [ ] não confundir responder em tempo real com treinar online
@@ -635,12 +644,12 @@ titanic = sns.load_dataset("titanic"): 891 passageiros, 38,4% sobreviveram; age 
 Use as colunas sem ausentes: pclass, sibsp, parch e fare. Com test_size=0.2 e random_state=42 (sem estratificar):
 DummyClassifier 0,624 no treino e 0,587 no teste.
 
-# Exercício #3 — Árvores
-max_depth 1 → 0,666 e 0,676; 4 → 0,742 e 0,732; 5 → 0,747 e 0,732; 10 → 0,801 e 0,732; sem limite → 0,838 e 0,693.
-A árvore sem limite tem a maior diferença entre treino e teste (variância alta); a de profundidade 1 erra nos dois (bias alto).
+# Exercício #3 — Regularização com termos polinomiais
+make_pipeline(StandardScaler(), PolynomialFeatures(6), StandardScaler(), LogisticRegression(C=C, max_iter=5000)) nas mesmas quatro colunas (210 colunas depois do PolynomialFeatures).
+C = 0,0001 → 0,629 e 0,587 (igual à referência: bias alto); 0,01 → 0,704 e 0,709; 0,1 → 0,730 e 0,726 (o melhor teste); 1 → 0,733 e 0,709; 10.000 → 0,746 e 0,704 (o treino sobe e o teste cai: variância).
 
-# Exercício #4 — Regularização
-make_pipeline(StandardScaler(), LogisticRegression(C=...)): C = 0,001 → 0,626 e 0,587 (igual à referência: bias alto); C = 1 → 0,680 e 0,715.
+# Exercício #4 — O grau como botão
+Com C = 10.000: grau 1 → 0,680 e 0,715; 2 → 0,726 e 0,715; 4 → 0,740 e 0,687; 6 → 0,746 e 0,704. Mais termos sobem o treino sem melhorar o teste: mais variância.
 
 ## os exercícios preparam os Exercícios 1 e 2 do TP1
 -->

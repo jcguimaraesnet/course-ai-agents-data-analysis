@@ -4,6 +4,8 @@ Instruções para agentes que trabalham neste repositório: os decks [Slidev](ht
 
 > **Padrão de instruções: `AGENTS.md`, não `CLAUDE.md`.** Não crie `CLAUDE.md` neste repositório. O Claude Code carrega o `AGENTS.md` automaticamente quando não há `CLAUDE.md`, e criar um faria o `AGENTS.md` deixar de ser lido. Ao mudar a estrutura do repo (novo deck, layout, componente, skill), atualize este arquivo.
 
+> **Idioma das respostas: português do Brasil.** Toda resposta do agente (Claude Code ou outro) nos chats sobre este repositório deve ser escrita em pt-BR, inclusive resumos, perguntas ao usuário e mensagens de commit.
+
 ## Escopo: este repo é PÚBLICO
 
 Aqui vivem só os slides, publicados no GitHub Pages:
@@ -92,7 +94,7 @@ O fio condutor do live coding é uma base fictícia de **viagens de bicicletas c
 
 - **Fio condutor:** a mesma empresa de bicicletas da DR1, agora com `usuarios_avulsos.csv`: 3.000 usuários avulsos no primeiro mês e o alvo `virou_assinante` (28,5%). O `gerar_dados.py` (seed 42) está nas notas do Live Coding da etapa 1; a `avaliacao_media` tem 8% de ausentes, tratados com `SimpleImputer` na etapa 2.
 - **Divisões:** a etapa 1 usa o `train_test_split` sem estratificar (o da DR1) e só as três numéricas sem ausentes; a etapa 2 estratifica e usa as sete features. Sempre `test_size=0.2` e `random_state=42`.
-- **Classificadores:** a etapa 1 usa a árvore de decisão (`max_depth`) e a regressão logística (`C`) como ferramentas para bias e variância; a regressão logística só é explicada na etapa 3, e os slides dizem isso.
+- **Classificadores:** a disciplina fica só com a regressão logística e o SVM; árvores de decisão, ensembles, KNN e Naive Bayes estão fora, por decisão pedagógica (orientações do TP2). Na etapa 1, bias e variância aparecem com a regressão logística sobre termos polinomiais (`PolynomialFeatures(8)`), variando o `C`; a regressão logística só é explicada na etapa 3, e os slides dizem isso.
 - **Hands-on:** o Titanic do seaborn (`sns.load_dataset("titanic")`). Os TPs usam a base sintética da NeoStream e o AT, a Telco Customer Churn: não use nenhuma das duas nos slides.
 
 - **Gráficos estáticos (`public/eda-*.png` e `public/pm-*.png`):** saem da skill `slide-charts`, que monta essa base com o código das notas e desenha no tema escuro dos slides (paleta validada para daltonismo, vírgula decimal). Crie ou refaça gráficos sempre por ela; a paleta fica em `.claude/skills/slide-charts/scripts/tema.py`. Os do deck `predictive-modeling` (`pm-*.png`) saem da base das notas da etapa 1 desse deck.

@@ -481,7 +481,7 @@ busca.best_score_     # 0.811
 
 <!--
 - o erro completo: ValueError: Invalid parameter 'C' for estimator Pipeline(...).
-- duas ou mais chaves na grade multiplicam as combinações: max_depth com 5 valores e min_samples_leaf com 3 dão 15 combinações, 75 treinos com cv=5.
+- duas ou mais chaves na grade multiplicam as combinações: os 6 valores de C e as estratégias "mean" e "median" do imputer (pre__num__simpleimputer__strategy) dão 12 combinações, 60 treinos com cv=5.
 - n_jobs=-1 usa todos os núcleos da máquina.
 - a busca também pode testar passos inteiros: {"pre__num": [make_pipeline(...), "passthrough"]}.
 -->
