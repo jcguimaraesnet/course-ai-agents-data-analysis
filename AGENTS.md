@@ -57,7 +57,7 @@ pnpm build                      # build dos dois decks em dist/<nome>/
 - **Fundo com brilho** ([global-bottom.vue](global-bottom.vue)): `glow`, `glowOpacity`, `glowHue` e `glowSeed` no frontmatter.
 - **Diagramas:** Mermaid com `look: handDrawn` e tema escuro ([setup/mermaid.ts](setup/mermaid.ts)).
 - **Código:** Monaco em Python, somente leitura ([setup/monaco.ts](setup/monaco.ts)).
-- **Addons:** os dois decks ativam o `window-mockup`. O `statistics-eda` também ativa o `slidev-addon-python-runner` (com a configuração `python:` no headmatter), que executa os blocos `{monaco-run}` no navegador.
+- **Addons:** os dois decks ativam o `window-mockup` e o `slidev-addon-python-runner` (com a configuração `python:` no headmatter), que executa os blocos `{monaco-run}` no navegador. As demos de `predictive-modeling` importam o scikit-learn, que o Pyodide carrega sozinho pelos imports (versão 1.4: a primeira execução demora alguns segundos).
 - **Demos `{monaco-run}`:** rodam no Pyodide 0.26, que traz o **pandas 2.x**: texto aparece como `object`, não `str`, e o copy-on-write do pandas 3 só vale se a demo ligar `pd.options.mode.copy_on_write = True`. Use **um bloco executável por slide** (com dois, o addon joga a saída de um no painel do outro) e capture erros esperados com `try/except`, para não exibir o traceback longo do Pyodide. Avisos longos também estouram o slide: resuma-os com `warnings.catch_warnings(record=True)`.
 - **Largura das demos:** numa coluna de `two-cols-header`, o editor quebra linhas com mais de ~50 caracteres. Divida a linha ou mova o comentário, e confira no navegador se a saída cabe acima do rodapé depois de executar.
 - **Comark:** `::code-group` (abas de código) e outros blocos `::componente` exigem `comark: true` no headmatter. Hoje só o deck `statistics-eda` ativa a opção.
@@ -88,7 +88,14 @@ O fio condutor do live coding é uma base fictícia de **viagens de bicicletas c
 - **Etapas 5 e 6:** a etapa 5 refaz a limpeza da etapa 2 com código gerado por IA, a partir dos exports brutos, e a confere com o pipeline manual (`limpeza_manual()`, nas notas do Live Coding); a análise descritiva volta à `carregar_base()`. A etapa 6 compara a nota média com e sem chuva (diferença grande e relevante) e de avulsos e assinantes (0,05 ponto, significativa, mas explicada pela duração). As demos recriam as notas de cada grupo a partir das contagens (`np.repeat`).
 - **Etapas 7 e 8:** a regressão da duração pela distância e, na etapa 8, também pelo tipo de usuário e pela chuva, sempre com `train_test_split(test_size=0.2, random_state=42)`. O par `choveu` × `chuva_mm` (r = 0,79) mostra a multicolinearidade, e a `velocidade_kmh`, calculada com a própria duração, mostra o vazamento.
 - **Etapa 9 e datasets reais:** o pipeline do live coding usa as corridas de táxi de Nova York (`taxis.csv` do repositório `mwaskom/seaborn-data`), um dataset real. Os hands-on das etapas 8 e 9 usam o `mpg`, o `penguins`, o `diamonds` e o `tips`, também do seaborn. O AT usa a base da Olist: não a use nos slides, para não antecipar a solução.
-- **Gráficos estáticos (`public/eda-*.png`):** saem da skill `slide-charts`, que monta essa base com o código das notas e desenha no tema escuro dos slides (paleta validada para daltonismo, vírgula decimal). Crie ou refaça gráficos sempre por ela; a paleta fica em `.claude/skills/slide-charts/scripts/tema.py`.
+### Base de dados das aulas (Modelagem Preditiva)
+
+- **Fio condutor:** a mesma empresa de bicicletas da DR1, agora com `usuarios_avulsos.csv`: 3.000 usuários avulsos no primeiro mês e o alvo `virou_assinante` (28,5%). O `gerar_dados.py` (seed 42) está nas notas do Live Coding da etapa 1; a `avaliacao_media` tem 8% de ausentes, tratados com `SimpleImputer` na etapa 2.
+- **Divisões:** a etapa 1 usa o `train_test_split` sem estratificar (o da DR1) e só as três numéricas sem ausentes; a etapa 2 estratifica e usa as sete features. Sempre `test_size=0.2` e `random_state=42`.
+- **Classificadores:** a etapa 1 usa a árvore de decisão (`max_depth`) e a regressão logística (`C`) como ferramentas para bias e variância; a regressão logística só é explicada na etapa 3, e os slides dizem isso.
+- **Hands-on:** o Titanic do seaborn (`sns.load_dataset("titanic")`). Os TPs usam a base sintética da NeoStream e o AT, a Telco Customer Churn: não use nenhuma das duas nos slides.
+
+- **Gráficos estáticos (`public/eda-*.png` e `public/pm-*.png`):** saem da skill `slide-charts`, que monta essa base com o código das notas e desenha no tema escuro dos slides (paleta validada para daltonismo, vírgula decimal). Crie ou refaça gráficos sempre por ela; a paleta fica em `.claude/skills/slide-charts/scripts/tema.py`. Os do deck `predictive-modeling` (`pm-*.png`) saem da base das notas da etapa 1 desse deck.
 
 ### Layouts e componentes próprios
 

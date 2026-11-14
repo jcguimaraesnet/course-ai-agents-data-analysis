@@ -1,18 +1,19 @@
 ---
 name: slide-charts
-description: Gera ou regenera os gráficos estáticos dos slides de Estatística e EDA (os PNGs public/eda-*.png), a partir da base de viagens das aulas e no tema escuro dos slides. Use quando o usuário pedir para criar, refazer ou ajustar um gráfico que aparece como imagem num slide — "regera os gráficos", "cria um gráfico de resíduos para a etapa 7", "muda a cor do boxplot", "põe mais uma coluna no heatmap", "mudei o gerar_dados.py nas notas, atualiza os gráficos". Não use para os gráficos que a turma faz no notebook (esses ficam no código das notas do Live Coding) nem para as demos {monaco-run}.
+description: Gera ou regenera os gráficos estáticos dos slides (os PNGs public/eda-*.png de Estatística e EDA e public/pm-*.png de Modelagem Preditiva), a partir das bases das aulas e no tema escuro dos slides. Use quando o usuário pedir para criar, refazer ou ajustar um gráfico que aparece como imagem num slide — "regera os gráficos", "cria um gráfico de resíduos para a etapa 7", "muda a cor do boxplot", "põe mais uma coluna no heatmap", "mudei o gerar_dados.py nas notas, atualiza os gráficos". Não use para os gráficos que a turma faz no notebook (esses ficam no código das notas do Live Coding) nem para as demos {monaco-run}.
 ---
 
 # Gráficos dos slides
 
-Os PNGs `public/eda-*.png` saem dos scripts desta skill. Cada gráfico é uma função Python, e um comando regenera um gráfico, uma etapa ou todos, sempre com a mesma base e o mesmo tema.
+Os PNGs `public/eda-*.png` (deck `statistics-eda`) e `public/pm-*.png` (deck `predictive-modeling`) saem dos scripts desta skill. Cada gráfico é uma função Python, e um comando regenera um gráfico, uma etapa ou todos, sempre com a mesma base e o mesmo tema.
 
 | Arquivo | Papel |
 |---------|-------|
 | `scripts/gerar.py` | Ponto de entrada. As dependências estão fixadas no cabeçalho (PEP 723), e o `uv run` monta o ambiente sozinho. |
-| `scripts/dados.py` | Monta a base com o código das notas: o `gerar_dados.py` (etapa 1, mais o trecho de abril da etapa 2) e o `preparar_base.py` (etapa 3) rodam numa pasta temporária. |
+| `scripts/dados.py` | Monta as bases com o código das notas, numa pasta temporária. `carregar_base()`: o `gerar_dados.py` (etapa 1, mais o trecho de abril da etapa 2) e o `preparar_base.py` (etapa 3) de Estatística e EDA. `carregar_base_pm()`: o `gerar_dados.py` da etapa 1 de Modelagem Preditiva (`usuarios_avulsos.csv`). |
 | `scripts/tema.py` | Paleta validada, estilo do matplotlib, formatação pt-BR (`virgula`, `pct`) e o registro `@grafico`. |
-| `scripts/etapaN.py` | Os gráficos da etapa N, uma função por PNG. |
+| `scripts/etapaN.py` | Os gráficos da etapa N de Estatística e EDA, uma função por PNG (`eda-*.png`). |
+| `scripts/pm_etapaN.py` | Os gráficos da etapa N de Modelagem Preditiva (`pm-*.png`); recebem a base de `carregar_base_pm()`. Filtre com `--deck predictive-modeling`. |
 
 O código da base **não é copiado** para a skill: ele vem das notas do Live Coding, o mesmo que a turma vê. Se as notas mudarem, os gráficos acompanham na próxima geração, e os números citados nos slides podem mudar junto: confira-os.
 

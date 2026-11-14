@@ -20,6 +20,16 @@ footer: false
 presenter: true
 addons:
   - window-mockup
+  - slidev-addon-python-runner
+# python-runner: executa os blocos {monaco-run} no navegador (Pyodide, com pandas 2.x e scikit-learn 1.4)
+python:
+  installs: []
+  loadPackagesFromImports: true
+  suppressDeprecationWarnings: true
+  alwaysReload: false
+  # o addon lê "loadOptions"; os pacotes (scikit-learn, scipy, openblas) vêm do CDN oficial do Pyodide 0.26.4
+  loadOptions:
+    indexURL: https://cdn.jsdelivr.net/pyodide/v0.26.4/full/
 ---
 
 # Modelagem Preditiva e Construção de Agentes de IA

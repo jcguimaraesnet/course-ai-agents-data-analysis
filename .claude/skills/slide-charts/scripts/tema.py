@@ -24,15 +24,20 @@ plt.rcParams.update({
     "font.size": 11, "axes.titlecolor": TINTA_2, "axes.titlesize": 12, "lines.linewidth": 2,
 })
 
-GRAFICOS = {}  # nome do PNG -> (etapa, função)
+GRAFICOS = {}  # nome do PNG -> (deck, etapa, função)
 
 
 def grafico(nome):
-    """Registra a função como o gráfico <nome>: ela recebe a base e devolve a figura."""
+    """Registra a função como o gráfico <nome>: ela recebe a base do deck e devolve a figura.
+
+    Módulos etapaN.py são do deck statistics-eda (eda-*.png); pm_etapaN.py, do predictive-modeling (pm-*.png).
+    """
     def registrar(funcao):
         if nome in GRAFICOS:
             raise ValueError(f"Gráfico registrado duas vezes: {nome}")
-        GRAFICOS[nome] = (int(funcao.__module__.removeprefix("etapa")), funcao)
+        modulo = funcao.__module__
+        deck = "predictive-modeling" if modulo.startswith("pm_") else "statistics-eda"
+        GRAFICOS[nome] = (deck, int(modulo.removeprefix("pm_").removeprefix("etapa")), funcao)
         return funcao
     return registrar
 

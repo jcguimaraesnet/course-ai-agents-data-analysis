@@ -10,11 +10,11 @@
 #     "scikit-learn==1.9.1",
 # ]
 # ///
-"""Gera os gráficos estáticos dos slides (public/eda-*.png) com a base das aulas.
+"""Gera os gráficos estáticos dos slides (public/eda-*.png e public/pm-*.png) com as bases das aulas.
 
 Uso, na raiz do repo:
     uv run .claude/skills/slide-charts/scripts/gerar.py --lista
-    uv run .claude/skills/slide-charts/scripts/gerar.py [trecho do nome ...] [--etapa N] [--saida PASTA]
+    uv run .claude/skills/slide-charts/scripts/gerar.py [trecho do nome ...] [--deck D] [--etapa N] [--saida PASTA]
 """
 import argparse
 import importlib
@@ -29,42 +29,52 @@ import matplotlib  # noqa: E402
 matplotlib.use("Agg")
 
 import tema  # noqa: E402
-from dados import REPO, carregar_base  # noqa: E402
+from dados import REPO, carregar_base, carregar_base_pm  # noqa: E402
 
 # O seaborn 0.13 passa ao boxplot um parâmetro que o matplotlib 3.11 deprecou: o aviso é da biblioteca.
 warnings.filterwarnings("ignore", message=".*vert: bool was deprecated")
 
-for modulo in sorted(Path(__file__).resolve().parent.glob("etapa*.py")):
+PASTA = Path(__file__).resolve().parent
+for modulo in sorted([*PASTA.glob("etapa*.py"), *PASTA.glob("pm_etapa*.py")]):
     importlib.import_module(modulo.stem)
+
+BASES = {"statistics-eda": carregar_base, "predictive-modeling": carregar_base_pm}
 
 
 def main():
     parser = argparse.ArgumentParser(description="Gera os gráficos estáticos dos slides.")
     parser.add_argument("nomes", nargs="*", help="trechos do nome do PNG (ex.: boxplot heatmap); sem nenhum, todos")
+    parser.add_argument("--deck", choices=sorted(BASES), help="só os gráficos deste deck")
     parser.add_argument("--etapa", type=int, help="só os gráficos desta etapa")
     parser.add_argument("--saida", type=Path, default=REPO / "public", help="pasta de saída (padrão: public/)")
     parser.add_argument("--lista", action="store_true", help="só lista os gráficos, sem gerar")
     args = parser.parse_args()
 
-    escolhidos = [(nome, etapa, funcao)
-                  for nome, (etapa, funcao) in sorted(tema.GRAFICOS.items(), key=lambda g: (g[1][0], g[0]))
-                  if (args.etapa is None or etapa == args.etapa)
+    escolhidos = [(nome, deck, etapa, funcao)
+                  for nome, (deck, etapa, funcao) in sorted(tema.GRAFICOS.items(), key=lambda g: (g[1][0], g[1][1], g[0]))
+                  if (args.deck is None or deck == args.deck)
+                  and (args.etapa is None or etapa == args.etapa)
                   and (not args.nomes or any(trecho in nome for trecho in args.nomes))]
     if not escolhidos:
         sys.exit("Nenhum gráfico com esse filtro; veja os nomes com --lista.")
     if args.lista:
-        for nome, etapa, _ in escolhidos:
-            print(f"etapa {etapa}  {nome}")
+        for nome, deck, etapa, _ in escolhidos:
+            print(f"{deck}  etapa {etapa}  {nome}")
         return
 
-    base = carregar_base()
-    print(f"base: {len(base)} viagens ({base['duracao_min'].notna().sum()} com duração)")
+    bases = {}
+    for deck in sorted({deck for _, deck, _, _ in escolhidos}):
+        bases[deck] = BASES[deck]()
+        if deck == "statistics-eda":
+            print(f"base: {len(bases[deck])} viagens ({bases[deck]['duracao_min'].notna().sum()} com duração)")
+        else:
+            print(f"base pm: {len(bases[deck])} usuários avulsos ({bases[deck]['virou_assinante'].mean():.1%} viraram assinantes)")
     publico = REPO / "public"
     saida = args.saida.resolve()
     saida.mkdir(parents=True, exist_ok=True)
-    for nome, _, funcao in escolhidos:
+    for nome, deck, _, funcao in escolhidos:
         destino = saida / nome
-        tema.salvar(funcao(base), destino)
+        tema.salvar(funcao(bases[deck]), destino)
         situacao = ""
         if saida != publico:
             atual = publico / nome
