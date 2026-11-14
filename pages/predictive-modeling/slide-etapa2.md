@@ -756,7 +756,7 @@ cross_val_score com cv=5: [0,797 0,762 0,803 0,810 0,817], média 0,798.
 
 # Exercício #4 — GridSearchCV
 C de 0,001 a 100: médias 0,621, 0,774, 0,796, 0,798, 0,798, 0,798; melhor C = 10 (empate prático a partir de 1).
-Teste: 0,805, contra 0,615 da referência (sempre "não sobreviveu").
+Teste: 0,804, contra 0,615 da referência (sempre "não sobreviveu").
 
 ## os exercícios preparam os Exercícios 3 a 8 do TP1
 -->
