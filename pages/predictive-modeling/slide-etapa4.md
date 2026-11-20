@@ -320,7 +320,7 @@ layout: section
 ---
 layout: two-cols-header
 layoutClass: gap-8
-sourceLabel: SVM: maximum margin
+sourceLabel: "SVM: maximum margin"
 source: https://scikit-learn.org/stable/auto_examples/svm/plot_separating_hyperplane.html
 ---
 
@@ -640,7 +640,7 @@ layout: section
 ---
 layout: two-cols-header
 layoutClass: gap-8
-sourceLabel: FastAPI: request body
+sourceLabel: "FastAPI: request body"
 source: https://fastapi.tiangolo.com/tutorial/body/
 ---
 
