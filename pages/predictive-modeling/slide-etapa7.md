@@ -368,7 +368,7 @@ source: https://openai.github.io/openai-agents-python/agents/
 ```python [agente.py]
 class Recomendacao(BaseModel):
     usuario_id: str
-    probabilidade: float
+    probabilidade: float = Field(ge=0, le=1)
     ligar: bool
     prioridade: Literal["baixa", "media", "alta"]
     motivo: str
@@ -627,7 +627,7 @@ from typing import Literal
 
 from agents import Agent, Runner
 from dotenv import load_dotenv
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from ferramentas import buscar_usuario, prever_assinatura
 
@@ -644,7 +644,7 @@ INSTRUCOES = (
 
 class Recomendacao(BaseModel):
     usuario_id: str
-    probabilidade: float
+    probabilidade: float = Field(ge=0, le=1)
     ligar: bool
     prioridade: Literal["baixa", "media", "alta"]
     motivo: str

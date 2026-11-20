@@ -421,7 +421,7 @@ consulta_rapida = Agent(
 - a função recebe os resultados das ferramentas de cada volta (resultados: lista de FunctionToolResult, com r.tool e r.output) e devolve um ToolsToFinalOutputResult.
 - por que não as outras opções: "stop_on_first_tool" pararia na buscar_usuario; StopAtTools entregaria o texto cru da API, sem validação.
 - com a API desligada, o final_output é o aviso da ferramenta ("A API do modelo está fora do ar..."), também com 2 chamadas: o painel mostra o problema em vez de um número inventado.
-- verificado com a API no ar e fora do ar, no SDK 0.24.
+- verificado com a API no ar e fora do ar, no SDK 0.24 e no 0.25.
 -->
 
 ---
